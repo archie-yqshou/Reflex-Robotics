@@ -8,11 +8,12 @@ from geometry import (
 )
 from visualization import plot_layer, print_layer_info
 
+# NOTE: Use this to choose the STL file you want to slice
 STL_FILE = "STLs/50mm cube.stl"
 
 
 def main():
-
+    # NOTE: Use this to define the layers you want to slice at
     test_layers = [
         (z_min, "Bottom Layer"),
         (25, "25mm"),
