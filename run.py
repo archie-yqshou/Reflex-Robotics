@@ -9,7 +9,7 @@ from geometry import (
 from visualization import plot_layer, print_layer_info
 
 # NOTE: Use this to choose the STL file you want to slice
-STL_FILE = "STLs/50mm cube.stl"
+STL_FILE = "STLs/Multiple Holes.stl"
 
 
 def main():    
@@ -42,20 +42,12 @@ def main():
         # Slice at this Z height
         segments, has_horizontal_faces = slice_at_z(triangles_dict, z, z_min, z_max)
         
-        if has_horizontal_faces:
-            original_count = len(segments)
-            segments_unique = deduplicate_segments_keep_one(segments)
-            removed_count = original_count - len(segments_unique)
-            if removed_count > 0:
-                print(f"\n{label} (z={z:.2f}):")
-                print(f"  Raw segments: {original_count}")
-                print(f"    Deduplication: {original_count} -> {len(segments_unique)} segments")
-                print(f"    Removed {removed_count} duplicate segments")
-                print(f"  Layer has horizontal faces, use solid infill")
-        else:
-            segments_unique = segments
+
+        original_count = len(segments)
+        segments_unique = deduplicate_segments_keep_one(segments)
+        removed_count = original_count - len(segments_unique)
         
-        contours = build_contours_nearest_neighbor(segments_unique, epsilon=0.01)
+        contours = build_contours_nearest_neighbor(segments_unique, epsilon=0.05)
         
         print_layer_info(z, label, segments_unique, contours, z_min, z_max)
         

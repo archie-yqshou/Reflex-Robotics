@@ -168,7 +168,7 @@ def slice_at_z(triangles_dict, z_height, z_min, z_max, tolerance=1e-3):
     return segments, has_horizontal_faces
 
 
-def deduplicate_segments_keep_one(segments, epsilon=1e-4):
+def deduplicate_segments_keep_one(segments, epsilon=0.1):
     """
     Remove duplicate segments, keeping ONE copy of each unique edge.
     
@@ -198,7 +198,7 @@ def deduplicate_segments_keep_one(segments, epsilon=1e-4):
     return unique_segments
 
 
-def build_contours_nearest_neighbor(segments, epsilon=0.01):
+def build_contours_nearest_neighbor(segments, epsilon=0.05):
     """
     Build contours from segments using nearest-neighbor chaining.
     
