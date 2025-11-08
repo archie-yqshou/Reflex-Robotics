@@ -9,7 +9,7 @@ from geometry import (
 from visualization import plot_layer, print_layer_info
 
 # NOTE: Use this to choose the STL file you want to slice
-STL_FILE = "STLs/Multiple Holes.stl"
+STL_FILE = "STLs/Through cube.stl"
 
 
 def main():    
@@ -42,10 +42,7 @@ def main():
         # Slice at this Z height
         segments, has_horizontal_faces = slice_at_z(triangles_dict, z, z_min, z_max)
         
-
-        original_count = len(segments)
         segments_unique = deduplicate_segments_keep_one(segments)
-        removed_count = original_count - len(segments_unique)
         
         contours = build_contours_nearest_neighbor(segments_unique, epsilon=0.05)
         
