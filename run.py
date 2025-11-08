@@ -12,16 +12,7 @@ from visualization import plot_layer, print_layer_info
 STL_FILE = "STLs/50mm cube.stl"
 
 
-def main():
-    # NOTE: Use this to define the layers you want to slice at
-    test_layers = [
-        (z_min, "Bottom Layer"),
-        (25, "25mm"),
-        ((z_max - z_min) / 2 + z_min, "Middle Layer"),
-        (z_max, "Top Layer")
-    ]
-    
-    
+def main():    
     triangles_dict = parse_stl_ascii(STL_FILE)
     
     print(f"\nTriangle categorization:")
@@ -36,6 +27,15 @@ def main():
     print(f"\nModel bounds: Z from {z_min:.2f} to {z_max:.2f} mm")
     print(f"Model height: {z_max - z_min:.2f} mm")
     
+    # NOTE: Use this to define the layers you want to slice at
+    test_layers = [
+        (z_min, "Bottom Layer"),
+        (25, "25mm"),
+        ((z_max - z_min) / 2 + z_min, "Middle Layer"),
+        (z_max, "Top Layer")
+    ]
+
+
     all_figures = []
     
     for z, label in test_layers:
