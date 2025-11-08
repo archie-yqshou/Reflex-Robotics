@@ -159,6 +159,45 @@ def slice_at_z(triangles_dict, z_height, z_min, z_max, tolerance=1e-3):
     return segments
 
 
+def deduplicate_segments_keep_one(segments, epsilon=1e-4):
+    """
+    Remove duplicate segments, keeping ONE copy of each unique edge.
+    
+    Unlike removing all duplicates, this keeps the first occurrence.
+    This solves the issue where wall triangles and horizontal face triangles
+    create the same edges, causing duplicate contours.
+    
+    Args:
+        segments: List of line segments [[x1, y1], [x2, y2]]
+        epsilon: Tolerance for comparing coordinates (not used with rounding)
+    
+    Returns:
+        List of unique segments (first occurrence kept)
+    """
+    if not segments:
+        return []
+    
+    unique_segments = []
+    seen_edges = set()
+    
+    for seg in segments:
+        # Normalize edge (round and sort so direction/precision doesn't matter)
+        p1 = tuple(np.round(seg[0], decimals=4))
+        p2 = tuple(np.round(seg[1], decimals=4))
+        edge_key = tuple(sorted([p1, p2]))
+        
+        if edge_key not in seen_edges:
+            seen_edges.add(edge_key)
+            unique_segments.append(seg)  # Keep first occurrence
+    
+    removed_count = len(segments) - len(unique_segments)
+    if removed_count > 0:
+        print(f"    Deduplication: {len(segments)} -> {len(unique_segments)} segments")
+        print(f"    Removed {removed_count} duplicate segments")
+    
+    return unique_segments
+
+
 def calculate_signed_area(contour):
     """
     Calculate signed area of a contour using the Shoelace formula.
@@ -502,9 +541,11 @@ if __name__ == "__main__":
         segments = slice_at_z(triangles_dict, z, z_min, z_max)
         print(f"  Raw segments: {len(segments)}")
         
+        # Deduplicate segments (keep one copy of each edge)
+        segments_unique = deduplicate_segments_keep_one(segments)
 
         # Build contours using nearest-neighbor chaining
-        contours = build_contours_nearest_neighbor(segments, epsilon=0.1)
+        contours = build_contours_nearest_neighbor(segments_unique, epsilon=0.1)
         print(f"  Contours found: {len(contours)}")
         
         # Classify contours by nesting level
@@ -532,8 +573,8 @@ if __name__ == "__main__":
                 test_pt = item['contour'][0]
                 print(f"    #{idx+1} Level {item['level']} ({level_type}): {len(item['contour'])} pts, area={item['area']:.2f}, test_pt=({test_pt[0]:.1f},{test_pt[1]:.1f})")
         
-        # Plot the layer (show both raw and deduplicated)
-        plot_layer(segments, contours, z, label)
+        # Plot the layer (show deduplicated segments and classified contours)
+        plot_layer(segments_unique, contours, z, label)
     
     print("\n" + "=" * 60)
     print("Displaying plots...")
