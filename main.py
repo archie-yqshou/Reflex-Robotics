@@ -501,7 +501,7 @@ def plot_layer(segments, contours, z_height, title="Layer"):
 
 # --- TEST CODE ---
 if __name__ == "__main__":
-    stl_file = "Through cube.STL"
+    stl_file = "Hole with Rod.STL"
     
     print("=" * 60)
     print("STL SLICER - CONTOUR BUILDING TEST")
@@ -523,11 +523,12 @@ if __name__ == "__main__":
     
     print(f"\nModel bounds: Z from {z_min} to {z_max}")
     
-    # Test slicing at bottom, middle, and top
+    # Test slicing at bottom, near-bottom, middle, and top
     test_layers = [
-        (z_min, "Bottom Layer"),
-        (25.0, "Middle Layer"),
-        (z_max, "Top Layer")
+        (z_min, "Bottom Layer (z=zmin)"),
+        (z_min + 1.5, "Second Layer (z=0.1)"),
+        ((z_max-z_min)/2 + z_min, "Middle Layer"),
+        (z_max, "Top Layer (z=zmax)")
     ]
     
     print("\n" + "=" * 60)
@@ -545,7 +546,7 @@ if __name__ == "__main__":
         segments_unique = deduplicate_segments_keep_one(segments)
 
         # Build contours using nearest-neighbor chaining
-        contours = build_contours_nearest_neighbor(segments_unique, epsilon=0.1)
+        contours = build_contours_nearest_neighbor(segments_unique, epsilon=0.01)
         print(f"  Contours found: {len(contours)}")
         
         # Classify contours by nesting level
